@@ -1,0 +1,29 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <id>com.bygo.aipath</id>
+    <name>Copy Path for AI</name>
+    <vendor email="bygo@users.noreply.github.com" url="https://github.com/bygo">bygo</vendor>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>org.jetbrains.plugins.terminal</depends>
+
+    <resource-bundle>messages.AiPathBundle</resource-bundle>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup id="Copy Path for AI" displayType="BALLOON" key="notification.title"/>
+    </extensions>
+
+    <actions>
+        <action
+                id="com.bygo.aipath.CopyAiPath"
+                class="com.bygo.aipath.CopyAiPathAction"
+                text="Copy Path for AI"
+                description="Inject an @path@Lline into the selected Terminal (Claude, Codex, Grok, …)">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <add-to-group group-id="CopyReferencePopupGroup" anchor="last"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="control 3"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta 3"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta 3"/>
+        </action>
+    </actions>
+</idea-plugin>

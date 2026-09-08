@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+  <!-- Copy Path for AI — dark tile + geometric @ -->
+  <rect width="40" height="40" rx="9" fill="#0B1220"/>
+  <rect x="1.5" y="1.5" width="37" height="37" rx="7.5" stroke="#22D3EE" stroke-opacity="0.45" stroke-width="1.5"/>
+  <!-- outer @ ring -->
+  <circle cx="19.5" cy="18.5" r="8.25" stroke="#F8FAFC" stroke-width="2.4" fill="none"/>
+  <!-- inner a -->
+  <circle cx="19.5" cy="18.5" r="3.35" fill="#F8FAFC"/>
+  <!-- stem (right side of ring → down) -->
+  <path d="M27.75 18.5V25.2c0 2.1-1.55 3.55-3.7 3.55" stroke="#F8FAFC" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+  <!-- reference underline -->
+  <rect x="12" y="32" width="16" height="2" rx="1" fill="#22D3EE"/>
+</svg>
