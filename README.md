@@ -1,5 +1,9 @@
 # Copy Path for AI
 
+[![Version](https://img.shields.io/jetbrains/plugin/v/34168.svg)](https://plugins.jetbrains.com/plugin/34168)
+[![Downloads](https://img.shields.io/jetbrains/plugin/d/34168.svg)](https://plugins.jetbrains.com/plugin/34168)
+[![Rating](https://img.shields.io/jetbrains/plugin/r/rating/34168.svg)](https://plugins.jetbrains.com/plugin/34168)
+
 JetBrains IDE plugin that copies a file reference from the current editor caret or selection and injects it into the IDE Terminal — for **Claude Code**, **Codex**, **Grok**, OpenCode, Gemini CLI, and similar AI coding agents.
 
 <!-- Plugin description -->
@@ -7,7 +11,7 @@ JetBrains IDE plugin that copies a file reference from the current editor caret 
 
 Works with **Claude Code**, **OpenAI Codex**, **Grok Build**, OpenCode, Gemini CLI, and other terminal AI agents that accept `@path` file references.
 
-[Github](https://github.com/bygo/copy-path-for-ai)
+[Github](https://github.com/bygo/copy-path-for-ai) · [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/34168)
 
 ### Features
 
@@ -24,7 +28,17 @@ Works with **Claude Code**, **OpenAI Codex**, **Grok Build**, OpenCode, Gemini C
 Uses the IDE **Terminal** tool window. Keep the tab with your AI agent selected. External apps (iTerm, Terminal.app) are not targeted — use clipboard paste there.
 <!-- Plugin description end -->
 
-## Install (local)
+## Install
+
+### From JetBrains Marketplace
+
+1. In the IDE: **Settings → Plugins → Marketplace**
+2. Search for **Copy Path for AI**
+3. Click **Install**, then restart if prompted
+
+Or open the [plugin page](https://plugins.jetbrains.com/plugin/34168) and click **Install to IDE**.
+
+### From disk (local build)
 
 1. Clone and build the distribution:
 
