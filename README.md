@@ -36,7 +36,7 @@ export JAVA_HOME=/opt/homebrew/opt/openjdk@21
 ```
 
 2. In the IDE: **Settings → Plugins → ⚙️ → Install Plugin from Disk…**
-3. Pick `build/distributions/copy-path-for-ai-1.0.0.zip`
+3. Pick `build/distributions/copy-path-for-ai-1.0.1.zip`
 
 ## Usage
 

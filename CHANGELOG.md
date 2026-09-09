@@ -4,6 +4,14 @@
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-09-09
+
+### Changed
+
+- Plugin icon: clean typographic `@` (removed the awkward geometric stub)
+
+## [1.0.0]
+
 ### Added
 
 - Copy AI file references `@path#Lline` / `@path#Lstart-Lend` from caret or selection
