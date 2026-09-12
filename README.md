@@ -38,19 +38,11 @@ Uses the IDE **Terminal** tool window. Keep the tab with your AI agent selected.
 
 Or open the [plugin page](https://plugins.jetbrains.com/plugin/34168) and click **Install to IDE**.
 
-### From disk (local build)
+### From GitHub Release
 
-1. Clone and build the distribution:
-
-```bash
-git clone https://github.com/bygo/copy-path-for-ai.git
-cd copy-path-for-ai
-export JAVA_HOME=/opt/homebrew/opt/openjdk@21
-./gradlew buildPlugin
-```
-
+1. Download the latest `copy-path-for-ai-*-signed.zip` from [Releases](https://github.com/bygo/copy-path-for-ai/releases)
 2. In the IDE: **Settings → Plugins → ⚙️ → Install Plugin from Disk…**
-3. Pick `build/distributions/copy-path-for-ai-1.0.1.zip`
+3. Select the downloaded zip, then restart if prompted
 
 ## Usage
 
