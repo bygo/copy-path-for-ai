@@ -4,6 +4,19 @@
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-09-12
+
+### Changed
+
+- Trigger Marketplace publish from version tag push (`1.0.3` / `v1.0.3`) via GitHub Actions
+
+## [1.0.2] - 2026-09-12
+
+### Changed
+
+- Drop `until-build` cap so the plugin stays compatible with WebStorm / IntelliJ **2026.2+** (was limited to `261.*` / 2026.1)
+- Add GitHub Actions for CI build and Marketplace publish on GitHub Release
+
 ## [1.0.1] - 2026-09-09
 
 ### Changed
@@ -29,3 +42,8 @@
 ### Fixed
 
 - Direct `sendText` / tty write for inject (no bracketed-paste / Terminal.Paste hacks)
+
+[Unreleased]: https://github.com/bygo/copy-path-for-ai/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/bygo/copy-path-for-ai/compare/v1.0.1...v1.0.2
+[1.0.1]: https://github.com/bygo/copy-path-for-ai/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/bygo/copy-path-for-ai/commits/v1.0.0

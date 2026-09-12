@@ -6,3 +6,10 @@ out/
 .DS_Store
 bin/
 .intellijPlatform/
+
+# Plugin signing material (generate locally; never commit)
+signing/*.pem
+signing/*.crt
+signing/*.key
+signing/*.p12
+signing/password.txt

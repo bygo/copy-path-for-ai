@@ -1,0 +1,140 @@
+# Publish to JetBrains Marketplace when a version tag is pushed
+# (e.g. git push origin 1.0.3) or when a GitHub Release is published.
+#
+# Required repository secrets (Settings → Secrets and variables → Actions):
+#   PUBLISH_TOKEN          — JetBrains Marketplace token
+#   CERTIFICATE_CHAIN      — PEM certificate chain
+#   PRIVATE_KEY            — PEM private key
+#   PRIVATE_KEY_PASSWORD   — password for PRIVATE_KEY (empty if unencrypted)
+#
+# Signing docs: https://plugins.jetbrains.com/docs/intellij/plugin-signing.html
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-*'
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+-*'
+  release:
+    types: [prereleased, released]
+
+concurrency:
+  group: marketplace-release-${{ github.event.release.tag_name || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish to Marketplace
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Maximize Build Space
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: false
+          large-packages: false
+
+      - name: Resolve tag
+        id: meta
+        run: |
+          TAG="${{ github.event.release.tag_name || github.ref_name }}"
+          VERSION="${TAG#v}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Fetch Sources
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.meta.outputs.tag }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: true
+
+      - name: Verify tag matches pluginVersion
+        run: |
+          VERSION="${{ steps.meta.outputs.version }}"
+          TAG="${{ steps.meta.outputs.tag }}"
+          PROP_VERSION="$(grep -E '^pluginVersion\s*=' gradle.properties | cut -d= -f2 | tr -d '[:space:]')"
+          if [ "$VERSION" != "$PROP_VERSION" ]; then
+            echo "::error::Tag '$TAG' (version '$VERSION') does not match pluginVersion='$PROP_VERSION' in gradle.properties"
+            exit 1
+          fi
+          echo "Publishing pluginVersion=$PROP_VERSION from tag $TAG"
+
+      - name: Patch Changelog from Release Notes
+        if: ${{ github.event_name == 'release' && github.event.release.body != '' }}
+        env:
+          CHANGELOG: ${{ github.event.release.body }}
+        run: |
+          RELEASE_NOTE="./build/tmp/release_note.txt"
+          mkdir -p "$(dirname "$RELEASE_NOTE")"
+          printf '%s\n' "$CHANGELOG" > "$RELEASE_NOTE"
+          ./gradlew patchChangelog --release-note-file="$RELEASE_NOTE"
+
+      - name: Publish Plugin
+        env:
+          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+          CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
+        run: ./gradlew publishPlugin
+
+      - name: Create / update GitHub Release assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.meta.outputs.tag }}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" ./build/distributions/* --clobber
+          else
+            gh release create "$TAG" ./build/distributions/* \
+              --title "${{ steps.meta.outputs.version }}" \
+              --notes "Copy Path for AI ${{ steps.meta.outputs.version }}" \
+              --verify-tag
+          fi
+
+      - name: Open Changelog PR
+        if: ${{ github.event_name == 'release' && github.event.release.body != '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ steps.meta.outputs.tag }}"
+          BRANCH="changelog-update-$VERSION"
+          LABEL="release changelog"
+
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+
+          git checkout -b "$BRANCH"
+          git add CHANGELOG.md
+          if git diff --cached --quiet; then
+            echo "No changelog changes to commit"
+            exit 0
+          fi
+          git commit -m "Changelog update - $VERSION"
+          git push --set-upstream origin "$BRANCH"
+
+          gh label create "$LABEL" \
+            --description "Pull requests with release changelog update" \
+            --force \
+            || true
+
+          gh pr create \
+            --title "Changelog update - \`$VERSION\`" \
+            --body "Patched \`CHANGELOG.md\` for the \`$VERSION\` release." \
+            --label "$LABEL" \
+            --head "$BRANCH" \
+            || true

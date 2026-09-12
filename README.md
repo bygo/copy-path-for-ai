@@ -67,6 +67,50 @@ Example payload:
 @src-tauri/src/capture/macos.rs#L96-L110 
 ```
 
+## Release / CI
+
+GitHub Actions:
+
+- **Build** (`.github/workflows/build.yml`) — on `main` / PRs: build + test, upload the plugin zip artifact
+- **Release** (`.github/workflows/release.yml`) — when you **push a version tag** (e.g. `1.0.3`) or publish a GitHub Release: sign and upload to [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/34168)
+
+### One-time secrets
+
+In the GitHub repo: **Settings → Secrets and variables → Actions**, add:
+
+| Secret | What it is |
+|--------|------------|
+| `PUBLISH_TOKEN` | Marketplace token from [plugins.jetbrains.com](https://plugins.jetbrains.com) → profile → **My Tokens** |
+| `CERTIFICATE_CHAIN` | PEM certificate chain for [plugin signing](https://plugins.jetbrains.com/docs/intellij/plugin-signing.html) |
+| `PRIVATE_KEY` | PEM private key |
+| `PRIVATE_KEY_PASSWORD` | Key password (use an empty secret if the key is unencrypted) |
+
+Generate a self-signed signing key (example):
+
+```bash
+openssl genpkey -aes-256-cbc -algorithm RSA -out private_encrypted.pem -pkeyopt rsa_keygen_bits:4096
+openssl rsa -in private_encrypted.pem -out private.pem
+openssl req -key private.pem -new -x509 -days 3650 -out chain.crt \
+  -subj "/CN=Copy Path for AI"
+```
+
+Put the contents of `chain.crt` / `private.pem` into the secrets above.
+
+### Publish a new version
+
+1. Bump `pluginVersion` in `gradle.properties` (and add notes under `CHANGELOG.md`)
+2. Commit and push to `main`
+3. Create and push a matching tag (leading `v` optional):
+
+```bash
+git tag 1.0.3
+git push origin 1.0.3
+```
+
+4. The Release workflow runs `./gradlew publishPlugin`, then creates/updates the GitHub Release with the zip attached
+
+Marketplace review can take a short while after upload before the new build appears.
+
 ## License
 
 Apache-2.0

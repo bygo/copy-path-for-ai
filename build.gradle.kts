@@ -62,7 +62,8 @@ intellijPlatform {
 
         ideaVersion {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
-            untilBuild = providers.gradleProperty("pluginUntilBuild")
+            // No until-build: compatible with 2024.3+ including WebStorm 2026.2 and later.
+            untilBuild = provider { null }
         }
     }
 
